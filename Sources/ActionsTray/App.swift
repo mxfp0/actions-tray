@@ -53,7 +53,7 @@ struct StatusLabel: View {
         }
         var config = NSImage.SymbolConfiguration(pointSize: 14, weight: .medium)
         if let color {
-            config = config.applying(NSImage.SymbolConfiguration(paletteColors: [color]))
+            config = config.applying(NSImage.SymbolConfiguration(paletteColors: [.white, color]))
         }
         let image = NSImage(systemSymbolName: symbol, accessibilityDescription: "GitHub Actions status")!
             .withSymbolConfiguration(config)!
