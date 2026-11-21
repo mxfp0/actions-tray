@@ -15,9 +15,21 @@
   </picture>
 </p>
 
+## Menu bar icon
+
+The icon shows the combined state of every repository you watch, so you can tell how CI is doing without opening anything. Running beats failed, and failed beats waiting for approval.
+
+| Icon | Meaning |
+| :---: | --- |
+| <picture><source media="(prefers-color-scheme: dark)" srcset="docs/tray/idle-dark.png"><img src="docs/tray/idle-light.png" width="56" height="26" alt="idle icon"></picture> | No data yet: no repositories added, or the first refresh hasn't finished. |
+| <picture><source media="(prefers-color-scheme: dark)" srcset="docs/tray/passing-dark.png"><img src="docs/tray/passing-light.png" width="56" height="26" alt="passing icon"></picture> | All good. The latest run of every workflow passed (or was skipped or cancelled). |
+| <picture><source media="(prefers-color-scheme: dark)" srcset="docs/tray/running-dark.png"><img src="docs/tray/running-light.png" width="56" height="26" alt="running icon"></picture> | Runs are queued or in progress. The number is how many. |
+| <picture><source media="(prefers-color-scheme: dark)" srcset="docs/tray/failed-dark.png"><img src="docs/tray/failed-light.png" width="56" height="26" alt="failed icon"></picture> | A workflow's latest run failed. |
+| <picture><source media="(prefers-color-scheme: dark)" srcset="docs/tray/approval-dark.png"><img src="docs/tray/approval-light.png" width="56" height="26" alt="approval icon"></picture> | A run is waiting for approval, such as a protected environment deployment. |
+
 ## Features
 
-- **Status at a glance.** The menu bar icon turns orange with a count while runs are in progress, red when a workflow's latest run failed, and yellow when one is waiting for approval.
+- **Status at a glance.** The [menu bar icon](#menu-bar-icon) changes color and shape for running, failed and waiting runs, with a count of active runs.
 - **A board per repository.** Every workflow's latest run plus anything still in progress, with branch, run number, live duration and age.
 - **Notifications** when runs finish: all of them, failures only, or none. Clicking one opens the run.
 - **Quick actions.** Click a run to open it on GitHub; right-click to copy its link, cancel it, or re-run failed jobs.
