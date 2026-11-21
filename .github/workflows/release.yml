@@ -1,0 +1,22 @@
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: macos-26
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build app bundle
+        run: VERSION="${GITHUB_REF_NAME#v}" scripts/build-app.sh
+      - name: Package
+        run: ditto -c -k --keepParent build/ActionsTray.app "ActionsTray-${GITHUB_REF_NAME}.zip"
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "$GITHUB_REF_NAME" "ActionsTray-${GITHUB_REF_NAME}.zip" --generate-notes
