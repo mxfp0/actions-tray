@@ -6,8 +6,11 @@ cd "$(dirname "$0")/.."
 
 VERSION="${VERSION:-0.0.0}"
 ARCHS=(--arch arm64 --arch x86_64)
+# SwiftPM links through `clang --sysroot`, which records the deployment target as the SDK version.
+# That puts SwiftUI in compatibility mode, where the MenuBarExtra window never shrinks.
+SDK_FLAGS=(-Xswiftc -Xclang-linker -Xswiftc -isysroot -Xswiftc -Xclang-linker -Xswiftc "$(xcrun --show-sdk-path)")
 
-swift build -c release "${ARCHS[@]}"
+swift build -c release "${ARCHS[@]}" "${SDK_FLAGS[@]}"
 BIN="$(swift build -c release "${ARCHS[@]}" --show-bin-path)/ActionsTray"
 APP=build/ActionsTray.app
 
