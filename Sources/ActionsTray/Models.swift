@@ -5,6 +5,14 @@ struct WorkflowRun: Decodable, Identifiable, Hashable, Sendable {
         let login: String
     }
 
+    struct Reference: Decodable, Hashable, Sendable {
+        let id: Int
+    }
+
+    struct RepositoryRef: Decodable, Hashable, Sendable {
+        let fullName: String
+    }
+
     let id: Int
     let name: String?
     let displayTitle: String
@@ -19,10 +27,19 @@ struct WorkflowRun: Decodable, Identifiable, Hashable, Sendable {
     let updatedAt: Date
     let runStartedAt: Date?
     let actor: Actor?
+    let pullRequests: [Reference]
+    let repository: RepositoryRef
+    let headRepository: RepositoryRef?
 
     var state: RunState { RunState(status: status, conclusion: conclusion) }
     var startedAt: Date { runStartedAt ?? createdAt }
     var workflowName: String { name ?? "Workflow" }
+
+    /// GitHub lists only open pull requests on a run, so an empty list means the PR was merged or closed.
+    /// Fork PRs never list theirs, so they can't be told apart and are kept.
+    var belongsToClosedPullRequest: Bool {
+        event.hasPrefix("pull_request") && pullRequests.isEmpty && headRepository == repository
+    }
 }
 
 struct RunsPage: Decodable, Sendable {
@@ -56,10 +73,12 @@ enum RunState: Sendable {
 }
 
 extension [WorkflowRun] {
-    /// Every active run plus the most recent run of each workflow, newest first.
+    /// Every active run plus the most recent run of each workflow, newest first,
+    /// ignoring finished runs of pull requests that have since been merged or closed.
     func boardRuns() -> [WorkflowRun] {
         var seenWorkflows = Set<Int>()
         return filter { run in
+            if !run.state.isActive, run.belongsToClosedPullRequest { return false }
             let firstOfWorkflow = seenWorkflows.insert(run.workflowId).inserted
             return firstOfWorkflow || run.state.isActive
         }
